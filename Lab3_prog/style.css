@@ -1,0 +1,79 @@
+body {
+    font-size: 20px;
+    color: darkblue;
+	background-color: rgb(167, 118, 179);
+    font-family: Calibri, sans-serif;
+    
+}
+
+.main-header {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: rgb(193, 39, 39);
+    padding-top: 15px;
+}
+
+div {
+    width: 600px;
+    height: 200px;
+    text-align: justify;
+    background-color: transparent;
+    overflow: auto;
+    margin: auto;
+    border-style: dashed;
+    border-width: 3px;
+    border-color: darkblue;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.center-text {
+    text-align: center;
+}
+
+a {
+    color: green;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+table {
+    border-collapse: collapse;
+    margin-left: 55%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+
+table, td {
+    border: 1px solid rgb(13, 13, 98);
+}
+
+td {
+    padding: 5px 15px;
+    text-align: center;
+}
+
+.gray-row {
+    background-color: rgba(153, 116, 174, 0.897);
+}
+
+.red-text {
+    color: red;
+}
+
+.orange-text {
+    color: orange;
+}
+
+.pink-text {
+    color: pink;
+}
+
+ul {
+    list-style-type: circle;
+}
