@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zadanie 5</title>
+</head>
+<body>
+    <script>
+        function oblicz_Pi(n) {
+            let suma = 0;
+            for (let i = 0; i < n; i++) {
+                let wyraz = 1 / (2 * i + 1);
+                if (i % 2 !== 0) {
+                    wyraz = -wyraz;
+                }
+                suma += wyraz;
+            }
+            let wynik = 4 * suma;
+            console.log(wynik);
+        }
+        
+        oblicz_Pi(10000);
+    </script>
+</body>
+</html>
