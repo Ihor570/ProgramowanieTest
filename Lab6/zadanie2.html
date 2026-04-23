@@ -1,0 +1,109 @@
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+#reset {display:none;}
+#stop {display:none;}
+</style>
+</head>
+<body>
+<h1 id="czas">
+<span id="godziny">00</span>:<span id="minuty">00</span>:<span id="sekundy">00</span>
+</h1>
+<button id="start">START</button>
+<button id="zapisz">ZAPISZ</button>
+<button id="stop">STOP</button>
+<button id="reset">RESET</button>
+<p id="stan_stopera"></p>
+<ul id="zapisane_czasy">
+</ul>
+
+<script>
+    let timerInterval;
+    let totalSeconds = 0;
+    let isRunning = false;
+
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const resetBtn = document.getElementById('reset');
+    const zapiszBtn = document.getElementById('zapisz');
+    const stanStopera = document.getElementById('stan_stopera');
+    const zapisaneCzasy = document.getElementById('zapisane_czasy');
+    const godzinyEl = document.getElementById('godziny');
+    const minutyEl = document.getElementById('minuty');
+    const sekundyEl = document.getElementById('sekundy');
+
+    function formatTime(val) {
+        return val < 10 ? '0' + val : val;
+    }
+
+    function updateDisplay() {
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        godzinyEl.textContent = formatTime(h);
+        minutyEl.textContent = formatTime(m);
+        sekundyEl.textContent = formatTime(s);
+    }
+
+    function setButtonsState(state) {
+        if (state === 'default') {
+            startBtn.style.display = 'inline-block';
+            zapiszBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            stanStopera.textContent = '';
+        } else if (state === 'running') {
+            startBtn.style.display = 'none';
+            zapiszBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'inline-block';
+            resetBtn.style.display = 'none';
+            stanStopera.textContent = 'Odliczanie...';
+        } else if (state === 'stopped') {
+            startBtn.style.display = 'inline-block';
+            zapiszBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            resetBtn.style.display = 'inline-block';
+            stanStopera.textContent = 'Wstrzymano';
+        }
+    }
+
+    setButtonsState('default');
+
+    startBtn.addEventListener('click', () => {
+        if (!isRunning) {
+            isRunning = true;
+            setButtonsState('running');
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                updateDisplay();
+            }, 1000);
+        }
+    });
+
+    stopBtn.addEventListener('click', () => {
+        if (isRunning) {
+            isRunning = false;
+            clearInterval(timerInterval);
+            setButtonsState('stopped');
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        isRunning = false;
+        clearInterval(timerInterval);
+        totalSeconds = 0;
+        updateDisplay();
+        setButtonsState('default');
+        zapisaneCzasy.innerHTML = '';
+    });
+
+    zapiszBtn.addEventListener('click', () => {
+        const li = document.createElement('li');
+        const count = zapisaneCzasy.getElementsByTagName('li').length + 1;
+        li.textContent = `${count}. ${godzinyEl.textContent}:${minutyEl.textContent}:${sekundyEl.textContent}`;
+        zapisaneCzasy.appendChild(li);
+    });
+</script>
+</body>
+</html>

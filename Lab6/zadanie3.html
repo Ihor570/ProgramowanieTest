@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Zadanie 3</title>
+</head>
+<body>
+    <h2>Aktualny czas w strefie polskiej:</h2>
+    <div id="czas_polska">Trwa pobieranie danych z API...</div>
+
+    <script>
+        fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Warsaw')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('czas_polska').textContent = `${data.time} (${data.date})`;
+            })
+            .catch(error => {
+                document.getElementById('czas_polska').textContent = 'Błąd pobierania danych.';
+            });
+    </script>
+</body>
+</html>
