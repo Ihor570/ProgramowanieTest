@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 7</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .zadanie { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+        .pole { margin-bottom: 10px; }
+        label { display: inline-block; width: 250px; }
+        .blad { color: red; }
+        .sukces { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="zadanie">
+        <h2>Zadanie 1</h2>
+        <div class="pole">
+            <label for="liczba1">Podaj pierwszą liczbę (dzielna):</label>
+            <input type="text" id="liczba1">
+        </div>
+        <div class="pole">
+            <label for="liczba2">Podaj drugą liczbę (dzielnik):</label>
+            <input type="text" id="liczba2">
+        </div>
+        <button onclick="podziel()">Podziel</button>
+        <div id="wynikZad1" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="zadanie">
+        <h2>Zadanie 2: Formularz rejestracji</h2>
+        <form id="formRejestracji">
+            <div class="pole">
+                <label for="nazwa_uz">Nazwa użytkownika:</label>
+                <input type="text" id="nazwa_uz" placeholder="Tylko litery i cyfry">
+            </div>
+            <div class="pole">
+                <label for="email_uz">Adres e-mail:</label>
+                <input type="text" id="email_uz" placeholder="adres@domena.rozszerzenie">
+            </div>
+            <div class="pole">
+                <label for="haslo_uz">Hasło:</label>
+                <input type="password" id="haslo_uz">
+            </div>
+            <div class="pole">
+                <label for="haslo_uz2">Powtórz hasło:</label>
+                <input type="password" id="haslo_uz2">
+            </div>
+            <div class="pole">
+                <label for="data_ur">Data urodzenia:</label>
+                <input type="date" id="data_ur">
+            </div>
+            <div class="pole">
+                <label for="plec_uz">Płeć:</label>
+                <select id="plec_uz">
+                    <option value="">Wybierz...</option>
+                    <option value="Mężczyzna">Mężczyzna</option>
+                    <option value="Kobieta">Kobieta</option>
+                    <option value="Nie chcę podawać">Nie chcę podawać</option>
+                </select>
+            </div>
+            <div class="pole">
+                <label for="zgoda">Akceptacja regulaminu:</label>
+                <input type="checkbox" id="zgoda">
+            </div>
+            <div class="pole">
+                <label>Wersja:</label><br>
+                <input type="radio" name="wersja" value="Wersja darmowa"> Wersja darmowa<br>
+                <input type="radio" name="wersja" value="Wersja standardowa"> Wersja standardowa<br>
+                <input type="radio" name="wersja" value="Wersja premium"> Wersja premium
+            </div>
+            
+            <button type="button" onclick="sprawdzFormularz()">Zarejestruj się</button>
+            <button type="reset" onclick="wyczyscKomunikaty()">Wyczyść</button>
+        </form>
+        <div id="komunikatZad2" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        
+        function podziel() {
+            let wynikDiv = document.getElementById('wynikZad1');
+            wynikDiv.innerHTML = '';
+            wynikDiv.className = '';
+
+            try {
+                let l1_str = document.getElementById('liczba1').value.replace(',', '.');
+                let l2_str = document.getElementById('liczba2').value.replace(',', '.');
+
+                if (l1_str === '' || l2_str === '') {
+                    throw "Pola nie mogą być puste.";
+                }
+
+                let l1 = Number(l1_str);
+                let l2 = Number(l2_str);
+
+                if (isNaN(l1) || isNaN(l2)) {
+                    throw "Wprowadzone dane nie są poprawnymi liczbami.";
+                }
+
+                if (l2 === 0) {
+                    throw "Nie można dzielić przez zero!";
+                }
+
+                let wynik = l1 / l2;
+                wynikDiv.innerHTML = "Wynik dzielenia: " + wynik;
+
+            } catch (error) {
+                wynikDiv.innerHTML = error;
+                wynikDiv.className = 'blad';
+            }
+        }
+
+       
+        function sprawdzFormularz() {
+            let komunikat = document.getElementById('komunikatZad2');
+            komunikat.innerHTML = '';
+            komunikat.className = '';
+
+            let nazwa = document.getElementById('nazwa_uz').value;
+            let email = document.getElementById('email_uz').value;
+            let haslo = document.getElementById('haslo_uz').value;
+            let haslo2 = document.getElementById('haslo_uz2').value;
+            let data = document.getElementById('data_ur').value;
+            let plec = document.getElementById('plec_uz').value;
+            let zgoda = document.getElementById('zgoda').checked;
+            
+            let wersjaObj = document.querySelector('input[name="wersja"]:checked');
+            let wersja = wersjaObj ? wersjaObj.value : "";
+
+            let bledy = [];
+
+            
+            if (!nazwa || !email || !haslo || !haslo2 || !data || !plec || !zgoda || !wersja) {
+                bledy.push("Wszystkie pola muszą być wypełnione, a regulamin zaakceptowany.");
+            }
+
+          
+            let regexAlfanumeryczne = /^[a-zA-Z0-9]+$/;
+            if (nazwa && !regexAlfanumeryczne.test(nazwa)) {
+                bledy.push("Nazwa użytkownika może zawierać tylko litery i cyfry.");
+            }
+
+            
+            if (haslo) {
+                if (haslo.length < 8) bledy.push("Hasło musi mieć co najmniej 8 znaków.");
+                if (!/\d/.test(haslo)) bledy.push("Hasło musi zawierać co najmniej jedną cyfrę.");
+                if (haslo !== haslo2) bledy.push("Podane hasła nie są identyczne.");
+            }
+
+           
+            let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !regexEmail.test(email)) {
+                bledy.push("Podany adres e-mail jest niepoprawny.");
+            }
+
+            
+            let dataSformatowana = "";
+            if (data) {
+                let dataUrodzenia = new Date(data);
+                let dzisiaj = new Date();
+                
+                let wiek = dzisiaj.getFullYear() - dataUrodzenia.getFullYear();
+                let m = dzisiaj.getMonth() - dataUrodzenia.getMonth();
+                if (m < 0 || (m === 0 && dzisiaj.getDate() < dataUrodzenia.getDate())) {
+                    wiek--;
+                }
+
+                if (wiek < 18) {
+                    bledy.push("Musisz być osobą pełnoletnią.");
+                }
+
+                let dzien = ("0" + dataUrodzenia.getDate()).slice(-2);
+                let miesiac = ("0" + (dataUrodzenia.getMonth() + 1)).slice(-2);
+                let rok = dataUrodzenia.getFullYear();
+                dataSformatowana = dzien + "." + miesiac + "." + rok;
+            }
+
+            
+            if (bledy.length > 0) {
+                let ul = document.createElement('ul');
+                for (let i = 0; i < bledy.length; i++) {
+                    let li = document.createElement('li');
+                    li.appendChild(document.createTextNode(bledy[i]));
+                    ul.appendChild(li);
+                }
+                komunikat.appendChild(ul);
+                komunikat.className = 'blad';
+            } else {
+                let gwiazdki = "";
+                for(let i=0; i<haslo.length; i++) gwiazdki += "*";
+
+                komunikat.innerHTML = 
+                    "Nazwa użytkownika: " + nazwa + "<br>" +
+                    "Hasło: " + gwiazdki + "<br>" +
+                    "Adres e-mail: " + email + "<br>" +
+                    "Data urodzenia: " + dataSformatowana + "<br>" +
+                    "Płeć: " + plec + "<br>" +
+                    "Wybrana wersja: " + wersja;
+                komunikat.className = 'sukces';
+            }
+        }
+
+        function wyczyscKomunikaty() {
+            let komunikat = document.getElementById('komunikatZad2');
+            komunikat.innerHTML = '';
+            komunikat.className = '';
+        }
+    </script>
+</body>
+</html>
