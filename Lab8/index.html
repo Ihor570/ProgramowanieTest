@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 8</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .zadanie { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        .pole { margin-bottom: 10px; }
+        label { display: inline-block; width: 150px; font-weight: bold; }
+        .wynik { margin-top: 15px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 5px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="zadanie">
+        <h2>Zadanie 1: Formularz i Obiekt</h2>
+        <form id="formZad1">
+            <div class="pole">
+                <label for="imie">Imię:</label>
+                <input type="text" id="imie" required>
+            </div>
+            <div class="pole">
+                <label for="nazwisko">Nazwisko:</label>
+                <input type="text" id="nazwisko" required>
+            </div>
+            <div class="pole">
+                <label for="wiek">Wiek:</label>
+                <input type="number" id="wiek" required>
+            </div>
+            <button type="submit">Zapisz i wyświetl</button>
+        </form>
+        <div id="wynikZad1" class="wynik" style="display: none;"></div>
+    </div>
+
+    <div class="zadanie">
+        <h2>Zadania 2-8: Liczby zespolone (OOP i Funkcyjnie)</h2>
+        <div class="pole">
+            <label for="ileLiczb">Rozmiar tablicy:</label>
+            <input type="number" id="ileLiczb" value="5" min="1">
+        </div>
+        <button onclick="uruchomZadaniaZespolone()">Wykonaj operacje</button>
+        <div id="wynikZad2_8" class="wynik" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('formZad1').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const imie = document.getElementById('imie').value;
+            const nazwisko = document.getElementById('nazwisko').value;
+            const wiek = Number(document.getElementById('wiek').value);
+
+            const osoba = {
+                imie: imie,
+                nazwisko: nazwisko,
+                wiek: wiek
+            };
+
+            console.log("a) Cały obiekt:", osoba);
+            
+            console.log("b) Własności osobno:");
+            console.log("Imię:", osoba.imie);
+            console.log("Nazwisko:", osoba.nazwisko);
+            console.log("Wiek:", osoba.wiek);
+
+            const osobaJSON = JSON.stringify(osoba);
+            console.log("c) Obiekt jako JSON:", osobaJSON);
+
+            const wynikDiv = document.getElementById('wynikZad1');
+            wynikDiv.style.display = 'block';
+            wynikDiv.innerHTML = `
+                <strong>Sprawdź konsolę by zobaczyć logi!</strong><br><br>
+                <strong>a) Obiekt jako string (domyślnie):</strong> ${osoba.toString()} <br>
+                <strong>b) Poszczególne pola:</strong> Imię: ${osoba.imie}, Nazwisko: ${osoba.nazwisko}, Wiek: ${osoba.wiek} <br>
+                <strong>c) Format JSON:</strong> ${osobaJSON}
+            `;
+        });
+
+        class ComplexNumber {
+            constructor(real, imaginary) {
+                this.real = real;
+                this.imaginary = imaginary;
+            }
+
+            wypisz() {
+                const znak = this.imaginary < 0 ? '-' : '+';
+                const wartoscUrojona = Math.abs(this.imaginary);
+                return `${this.real} ${znak} ${wartoscUrojona}i`;
+            }
+
+            module() {
+                return Math.sqrt(Math.pow(this.real, 2) + Math.pow(this.imaginary, 2));
+            }
+        }
+
+        function generujLiczbyZespolone(n) {
+            let tablica = [];
+            for (let i = 0; i < n; i++) {
+               
+                const r = Math.floor(Math.random() * 21) - 10;
+                const im = Math.floor(Math.random() * 21) - 10;
+                tablica.push(new ComplexNumber(r, im));
+            }
+            return tablica;
+        }
+
+        function uruchomZadaniaZespolone() {
+            const n = Number(document.getElementById('ileLiczb').value);
+            if (n < 1) {
+                alert("Podaj liczbę większą od zera.");
+                return;
+            }
+
+            const tablicaZespolonych = generujLiczbyZespolone(n);
+            let htmlWynikowy = `<strong>Wygenerowana tablica bazowa (Zadanie 3):</strong><br>`;
+            htmlWynikowy += tablicaZespolonych.map(c => c.wypisz()).join(', ') + `<br><br>`;
+
+            const dodatnie = tablicaZespolonych.filter(c => c.real > 0 && c.imaginary > 0);
+            htmlWynikowy += `<strong>Zadanie 4 (Tylko dodatnie wartości - filter):</strong><br>`;
+            htmlWynikowy += dodatnie.length > 0 ? dodatnie.map(c => c.wypisz()).join(', ') : "Brak liczb o obu dodatnich wartościach.";
+            htmlWynikowy += `<br><br>`;
+
+            const zamienione = tablicaZespolonych.map(c => new ComplexNumber(c.imaginary, c.real));
+            htmlWynikowy += `<strong>Zadanie 5 (Zamienione Re z Im - map):</strong><br>`;
+            htmlWynikowy += zamienione.map(c => c.wypisz()).join(', ') + `<br><br>`;
+
+            const sumaModulow = tablicaZespolonych.reduce((suma, c) => suma + c.module(), 0);
+            htmlWynikowy += `<strong>Zadanie 6 (Suma modułów - reduce):</strong> ${sumaModulow.toFixed(4)}<br><br>`;
+
+            const minModul = tablicaZespolonych.reduce((min, c) => c.module() < min ? c.module() : min, tablicaZespolonych[0].module());
+            htmlWynikowy += `<strong>Zadanie 7 (Najmniejszy moduł - reduce):</strong> ${minModul.toFixed(4)}<br><br>`;
+
+            const maxLiczba = tablicaZespolonych.reduce((maxObj, c) => c.module() > maxObj.module() ? c : maxObj, tablicaZespolonych[0]);
+            htmlWynikowy += `<strong>Zadanie 8 (Liczba o największym module - reduce):</strong> ${maxLiczba.wypisz()} (moduł wynosi: ${maxLiczba.module().toFixed(4)})`;
+
+            const wynikDiv = document.getElementById('wynikZad2_8');
+            wynikDiv.style.display = 'block';
+            wynikDiv.innerHTML = htmlWynikowy;
+        }
+    </script>
+</body>
+</html>
