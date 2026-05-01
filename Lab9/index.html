@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 9</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 40px;
+            font-size: 18px;
+            color: rgb(151, 175, 154);
+            background-color: rgb(35, 37, 96);
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        button {
+            font-size: 14px;
+            padding: 3px 8px;
+            cursor: pointer;
+            color: rgb(144, 19, 96);
+            background-color: rgb(224, 229, 207);
+        }
+        .odstep {
+            margin-bottom: 20px;
+        }
+        .etykieta {
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="punktyWyswietl">0</h1>
+
+    <div class="odstep">
+        <button onclick="kliknij()">Kliknij mnie!</button>
+    </div>
+
+    <div class="etykieta">Moc kliknięcia = <span id="mocSila">1</span></div>
+    <div class="odstep">
+        <button id="btnMoc" onclick="kupMoc()">Ulepsz moc kliknięcia (<span id="kosztMocy">10</span>)</button>
+    </div>
+
+    <div class="etykieta">Pasywne kliknięcia = <span id="pasywnySila">0</span></div>
+    <div class="odstep">
+        <button id="btnPasywny" onclick="kupPasywny()">Ulepsze pasywne kliknięcia (<span id="kosztPasywny">50</span>)</button>
+    </div>
+
+    <br><br>
+    <button onclick="resetGry()">Reset</button>
+
+    <script>
+        let stanGry = {
+            punkty: 0,
+            mocKlikniecia: 1,
+            kosztMocy: 10,
+            przychodPasywny: 0,
+            kosztPasywny: 50,
+            ostatniCzas: Date.now()
+        };
+
+        function inicjalizacja() {
+            let zapisaneDane = localStorage.getItem('daneClickerLab9');
+            if (zapisaneDane) {
+                stanGry = JSON.parse(zapisaneDane);
+                let aktualnyCzas = Date.now();
+                let roznicaSekund = Math.floor((aktualnyCzas - stanGry.ostatniCzas) / 1000);
+                if (roznicaSekund > 0 && stanGry.przychodPasywny > 0) {
+                    stanGry.punkty += roznicaSekund * stanGry.przychodPasywny;
+                }
+                stanGry.ostatniCzas = aktualnyCzas;
+            }
+            aktualizujInterfejs();
+            setInterval(petlaGry, 1000);
+        }
+
+        function zapiszDane() {
+            stanGry.ostatniCzas = Date.now();
+            localStorage.setItem('daneClickerLab9', JSON.stringify(stanGry));
+        }
+
+        function aktualizujInterfejs() {
+            document.getElementById('punktyWyswietl').innerText = Math.floor(stanGry.punkty);
+            document.getElementById('mocSila').innerText = stanGry.mocKlikniecia;
+            document.getElementById('kosztMocy').innerText = stanGry.kosztMocy;
+            document.getElementById('pasywnySila').innerText = stanGry.przychodPasywny;
+            document.getElementById('kosztPasywny').innerText = stanGry.kosztPasywny;
+            document.getElementById('btnMoc').disabled = stanGry.punkty < stanGry.kosztMocy;
+            document.getElementById('btnPasywny').disabled = stanGry.punkty < stanGry.kosztPasywny;
+        }
+
+        function kliknij() {
+            stanGry.punkty += stanGry.mocKlikniecia;
+            aktualizujInterfejs();
+            zapiszDane();
+        }
+
+        function kupMoc() {
+            if (stanGry.punkty >= stanGry.kosztMocy) {
+                stanGry.punkty -= stanGry.kosztMocy;
+                stanGry.mocKlikniecia += 1;
+                stanGry.kosztMocy = Math.floor(stanGry.kosztMocy * 1.5);
+                aktualizujInterfejs();
+                zapiszDane();
+            }
+        }
+
+        function kupPasywny() {
+            if (stanGry.punkty >= stanGry.kosztPasywny) {
+                stanGry.punkty -= stanGry.kosztPasywny;
+                stanGry.przychodPasywny += 1;
+                stanGry.kosztPasywny = Math.floor(stanGry.kosztPasywny * 1.5);
+                aktualizujInterfejs();
+                zapiszDane();
+            }
+        }
+
+        function petlaGry() {
+            if (stanGry.przychodPasywny > 0) {
+                stanGry.punkty += stanGry.przychodPasywny;
+                aktualizujInterfejs();
+                zapiszDane();
+            }
+        }
+
+        function resetGry() {
+            localStorage.removeItem('daneClickerLab9');
+            stanGry = {
+                punkty: 0,
+                mocKlikniecia: 1,
+                kosztMocy: 10,
+                przychodPasywny: 0,
+                kosztPasywny: 50,
+                ostatniCzas: Date.now()
+            };
+            aktualizujInterfejs();
+            zapiszDane();
+        }
+
+        window.onload = inicjalizacja;
+    </script>
+</body>
+</html>
